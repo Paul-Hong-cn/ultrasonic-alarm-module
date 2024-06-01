@@ -1,0 +1,95 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              05/10/2024 23:15:39 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\Keil uvision5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listing
+                    -s\main.lst) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <REGX52.H>
+   2          #include "LCD1602.h"
+   3          #include "Distance.h"
+   4          #include "led.h"
+   5          #include "Alarm.h"
+   6          #include "Delayxms.h"
+   7          
+   8          xdata unsigned int times = 0;
+   9          xdata unsigned int s1,currentButtonState;
+  10          xdata unsigned int lastButtonState = 1;
+  11          xdata unsigned int isEnabled = 1;
+  12          xdata unsigned int alarm_time_1 = 0;
+  13          
+  14          
+  15          void main()
+  16          {
+  17   1              
+  18   1              LCD_Init();//初始化LCD屏幕
+  19   1              Time1Init();//测距模块初始化，测距模块使用定时器1，所以这里用Time1Init作为函数名
+  20   1              Alarm_Init();//报警模块初始化
+  21   1              LCD_ShowString(1,1,"DISTANCE(cm):");//LCD屏显示DISTANCE
+  22   1              LCD_ShowString(2,1,"ALARMING(s):");//LCD屏显示ALARMING
+  23   1              while(1)
+  24   1          {
+  25   2                      currentButtonState = P3_0; //确认当前按键状态
+  26   2                      if(currentButtonState != lastButtonState)
+  27   2                      {
+  28   3                              Delayxms(50);//去抖动
+  29   3                              
+  30   3                          if (currentButtonState == 0 && lastButtonState == 1)  // 之前没有按下，现在按下了
+  31   3                              {
+  32   4                                      alarm_time_1 = Alarm_Close();//关闭报警模块，报警时间归零
+  33   4                                      LCD_ShowNum(2,13,alarm_time_1,4);//显示归零报警时间
+  34   4                                      Light_Close();//LED灯熄灭
+  35   4                                      Delayxms(100);
+  36   4                                      lastButtonState = currentButtonState;//改变当前状态，进入第三个函数
+  37   4                                      isEnabled = !isEnabled;//使能信号为零，报警模块不工作
+  38   4                                      times ++;//这里times不为零，决定了当重新报警时我需要从头开始播放
+  39   4                              }
+  40   3                              
+  41   3                              else if (currentButtonState == 1 && lastButtonState == 0)  // 之前按下了，现在没有按下
+  42   3                              {
+  43   4                                      alarm_time_1 = Alarm_Close();
+  44   4                                      LCD_ShowNum(2,13,alarm_time_1,4);
+  45   4                                      Light_Close();
+  46   4                                      Delayxms(100);
+  47   4                                      lastButtonState = currentButtonState;//改变当前状态，进入第一个函数
+  48   4                                      times ++;
+  49   4                              }
+  50   3                      }
+  51   2                      else if (currentButtonState == 1 && lastButtonState == 1)  // 之前没有按下，现在还是没有按下
+  52   2              {
+  53   3                              if(isEnabled)//如果为1，说明之前没有按下暂停键。如果为0，则说明之前暂停键按下过，需要再按一遍才能进入报
+             -警模块，等待按下后进入第二个函数
+C51 COMPILER V9.60.7.0   MAIN                                                              05/10/2024 23:15:39 PAGE 2   
+
+  54   3                              {
+  55   4                                      
+  56   4                                      s1 = Distance();//测距
+  57   4                                      judge_distance(s1);     //通过测得的距离决定LED灯闪亮，这里函数前后顺序没什么关系       
+  58   4                                      LCD_ShowNum(1,14,s1,3);//显示所测距离
+  59   4                                      alarm_time_1 = Alarm1_Play(s1,times);//测算报警时间
+  60   4                                      LCD_ShowNum(2,13,alarm_time_1,4);//显示报警时间
+  61   4                                      times = 0;//决定报警模块是否要从头播放音乐的关键变量
+  62   4                              }
+  63   3                              
+  64   3              }
+  65   2                      
+  66   2              
+  67   2          }
+  68   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    404    ----
+   CONSTANT SIZE    =     27    ----
+   XDATA SIZE       =     12    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

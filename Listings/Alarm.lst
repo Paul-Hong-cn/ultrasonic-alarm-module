@@ -1,0 +1,412 @@
+C51 COMPILER V9.60.7.0   ALARM                                                             05/10/2024 23:08:10 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE ALARM
+OBJECT MODULE PLACED IN .\Objects\Alarm.obj
+COMPILER INVOKED BY: D:\Keil uvision5\C51\BIN\C51.EXE Alarm.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listin
+                    -gs\Alarm.lst) OBJECT(.\Objects\Alarm.obj)
+
+line level    source
+
+   1          #include <REGX52.H>
+   2          #include "Delayxms.h"
+   3          #include "LCD1602.h"
+   4          
+   5          sbit Buzzer = P2^5;
+   6          #define SPEED 500
+   7          
+   8          #define P0  0
+   9          #define L1  1
+  10          #define L1_ 2
+  11          #define L2  3
+  12          #define L2_ 4
+  13          #define L3  5
+  14          #define L4  6
+  15          #define L4_ 7
+  16          #define L5  8
+  17          #define L5_ 9
+  18          #define L6  10
+  19          #define L6_ 11
+  20          #define L7  12
+  21          #define M1  13
+  22          #define M1_ 14
+  23          #define M2  15
+  24          #define M2_ 16
+  25          #define M3  17
+  26          #define M4  18
+  27          #define M4_ 19
+  28          #define M5  20
+  29          #define M5_ 21
+  30          #define M6  22
+  31          #define M6_ 23
+  32          #define M7  24
+  33          #define H1  25
+  34          #define H1_ 26
+  35          #define H2  27
+  36          #define H2_ 28
+  37          #define H3  29
+  38          #define H4  30
+  39          #define H4_ 31
+  40          #define H5  32
+  41          #define H5_ 33
+  42          #define H6  34
+  43          #define H6_ 35
+  44          #define H7  36
+  45          
+  46          
+  47          unsigned int FreqTable[] = {
+  48              0,
+  49                  63628, 63731, 63835, 63928, 64021, 64103, 64185, 64260, 64331, 64400, 64463, 64524,
+  50              64580, 64633, 64684, 64732, 64777, 64820, 64860, 64898, 64934, 64968, 65000, 65030,
+  51              65058, 65085, 65110, 65134, 65157, 65178, 65198, 65217, 65235, 65252, 65268, 65283,
+  52              
+  53          };
+  54          unsigned char code Alarm1[]={
+C51 COMPILER V9.60.7.0   ALARM                                                             05/10/2024 23:08:10 PAGE 2   
+
+  55                  M5,2,
+  56                  M7,2,
+  57                  H1,2,
+  58                  M5,2,
+  59                  M7,2,
+  60                  H1,2,
+  61                  M5,2,
+  62                  M7,2,
+  63                  
+  64                  M5,2,
+  65                  M7,2,
+  66                  H1,2,
+  67                  M5,2,
+  68                  M7,2,
+  69                  H1,2,
+  70                  M5,2,
+  71                  M7,2,
+  72                  
+  73                  M5,2,
+  74                  M7,2,
+  75                  H1,2,
+  76                  M5,2,
+  77                  M7,2,
+  78                  H1,2,
+  79                  M5,2,
+  80                  M7,2,
+  81                  
+  82                  M5,2,
+  83                  H1,2,
+  84                  H2,2,
+  85                  M5,2,
+  86                  H1,2,
+  87                  H2,2,
+  88                  M5,2,
+  89                  H1,2
+  90                  
+  91          };//天气之子
+  92          unsigned char code Alarm2[]={
+  93                  M5,2,
+  94                  M6,2,
+  95                  H2,2,
+  96                  M5,2,
+  97                  M6,2,
+  98                  H2,2,
+  99                  M5,2,
+ 100                  M6,2,
+ 101                  M5,2,
+ 102                  M6,2,
+ 103                  H1,2,
+ 104                  M5,2,
+ 105                  M6,2,
+ 106                  
+ 107                  M6,2,
+ 108                  H1,2,
+ 109                  H3,2,
+ 110                  M6,2,
+ 111                  H1,2,
+ 112                  H3,2,
+ 113                  M6,2,
+ 114                  H1,2,
+ 115                  M6,2,
+ 116                  H1,2,
+C51 COMPILER V9.60.7.0   ALARM                                                             05/10/2024 23:08:10 PAGE 3   
+
+ 117                  H2,2,
+ 118                  M6,2,
+ 119                  H1,2,
+ 120                  H2,2,
+ 121                  M6,2,
+ 122                  H1,2,
+ 123                  
+ 124                  M6,2,
+ 125                  H1,2,
+ 126                  H2,2,
+ 127                  M6,2,
+ 128                  H1,2,
+ 129                  H2,2,
+ 130                  M6,2,
+ 131                  H1,2,
+ 132                  M5,2,
+ 133                  M6,2,
+ 134                  H1,2,
+ 135                  M5,2,
+ 136                  M6,2,
+ 137                  H1,2,
+ 138                  M5,2,
+ 139                  M6,2,
+ 140                  
+ 141                  M5,2,
+ 142                  H1,2,
+ 143                  H5,2,
+ 144                  M5,2,
+ 145                  H1,2,
+ 146                  H5,2,
+ 147                  M5,2,
+ 148                  H1,2,
+ 149                  M6,2,
+ 150                  H1,2,
+ 151                  H2,2,
+ 152                  M6,2,
+ 153                  H1,2,
+ 154                  H2,2,
+ 155                  M6,2,
+ 156                  H1,2
+ 157          };//Time to Pretend
+ 158          unsigned char code Alarm3[]={
+ 159                  //1
+ 160                  H3,2,
+ 161                  H2_,2,
+ 162                  
+ 163                  H3,2,
+ 164                  H2_,2,
+ 165                  H3,2,
+ 166                  M7,2,
+ 167                  H2_,2,
+ 168                  H1,2,
+ 169                  
+ 170                  M6,4,
+ 171                  P0,2,
+ 172                  M1,2,
+ 173                  M3,2,
+ 174                  M6,2,
+ 175                  
+ 176                  M7,4,
+ 177                  P0,2,
+ 178                  M3,2,
+C51 COMPILER V9.60.7.0   ALARM                                                             05/10/2024 23:08:10 PAGE 4   
+
+ 179                  M5_,2,
+ 180                  M7,2,
+ 181                  //2
+ 182                  H1,4,
+ 183                  P0,4,
+ 184                  H3,2,
+ 185                  H2_,2,
+ 186                  
+ 187                  H3,2,
+ 188                  H2_,2,
+ 189                  H3,2,
+ 190                  M7,2,
+ 191                  H2_,2,
+ 192                  H1,2,
+ 193                  
+ 194                  M6,4,
+ 195                  P0,2,
+ 196                  M1,2,
+ 197                  M3,2,
+ 198                  M6,2,
+ 199                  //3
+ 200                  M7,4,
+ 201                  P0,2,
+ 202                  M3,2,
+ 203                  H1,2,
+ 204                  M7,2,
+ 205                  
+ 206                  M6,4,
+ 207                  P0,2,
+ 208                  M7,2,
+ 209                  H1,2,
+ 210                  H2,2,
+ 211                  
+ 212                  H3,4,
+ 213                  P0,2,
+ 214                  M5,2,
+ 215                  H4,2,
+ 216                  H3,2,
+ 217                  //4
+ 218                  H2,4,
+ 219                  P0,2,
+ 220                  M4,2,
+ 221                  H3,2,
+ 222                  H2,2,
+ 223                  
+ 224                  H1,4,
+ 225                  P0,2,
+ 226                  M3,2,
+ 227                  H2,2,
+ 228                  H1,2,
+ 229                  M7,4+4+4
+ 230          };//致爱丽丝
+ 231          xdata unsigned char FreqSelect, Alarm1Select,Alarm2Select,Alarm3Select;
+ 232          xdata unsigned int s2,s3;
+ 233          xdata unsigned int Alarm_on ;
+ 234          xdata unsigned int alarm_time_0 = 0;
+ 235          xdata unsigned int alarm_time_2 = 0;
+ 236          /*
+ 237          这里是有三组音乐，根据简谱和C调频率表转换成对应的频率，我在程序中已经定义好C调频率表的对应频率，
+ 238          只需要调动常量即可，具体请看B站视频。从距离来看由近至远天空之城，回家，致爱丽丝
+ 239          */
+ 240          void Alarm_Init()
+C51 COMPILER V9.60.7.0   ALARM                                                             05/10/2024 23:08:10 PAGE 5   
+
+ 241          {
+ 242   1              TMOD &= 0xF0;   // 清除T0相关的低四位，保持T1设置不变   
+ 243   1              TMOD |= 0x01;   // 设置T0为模式1        
+ 244   1              TL0 = 0x18;             
+ 245   1              TH0 = 0xFC;             //定时1ms
+ 246   1              TF0 = 0;                
+ 247   1              TR0 = 1;                //定时器0开始计时
+ 248   1              ET0=1;//允许定时器0中断
+ 249   1              EA=1;//允许全局中断
+ 250   1              PT0=1;  //定时器0优先级为高优先级
+ 251   1          Alarm1Select = 0;
+ 252   1              Alarm2Select = 0;
+ 253   1              Alarm3Select = 0;
+ 254   1              Alarm_on = 0;
+ 255   1      }
+ 256          
+ 257          int Alarm1_Play(unsigned int s2,unsigned int times)
+ 258          {
+ 259   1              
+ 260   1              if (s2 >=0 && s2 < 20 )
+ 261   1              {
+ 262   2                      if(times != 0 || Alarm_on != 0)
+ 263   2                      {
+ 264   3                              /*
+ 265   3                              从暂停到报警，音乐需要重新开始
+ 266   3                              当我距离从状态A转移到状态B时，也需要重新开始播放
+ 267   3                              */
+ 268   3                              Alarm1Select = 0;
+ 269   3                              alarm_time_0 = 0;
+ 270   3                              alarm_time_2 = 0;
+ 271   3                      }
+ 272   2                      FreqSelect= Alarm1[Alarm1Select];
+ 273   2                      Alarm1Select++;
+ 274   2                      Delayxms(125*Alarm1[Alarm1Select]);
+ 275   2                      alarm_time_0 += 125*Alarm1[Alarm1Select] ;
+ 276   2                      alarm_time_2 = alarm_time_0 / 1000 ;
+ 277   2                      Alarm1Select++;
+ 278   2                      if(Alarm1Select >= sizeof(Alarm1))
+ 279   2                      {
+ 280   3                              Alarm1Select  = 0;//如果音乐播放完就从头开始播放
+ 281   3                      }
+ 282   2                      TR0 = 0;
+ 283   2                      Delayxms(5);
+ 284   2                      TR0 = 1;
+ 285   2                      Alarm_on = 0;
+ 286   2              }
+ 287   1              else if (s2 >= 20 && s2 < 40  )
+ 288   1              {
+ 289   2                      if(times != 0 || Alarm_on != 1)
+ 290   2                      {
+ 291   3                              Alarm2Select = 0;
+ 292   3                              alarm_time_0 = 0;
+ 293   3                              alarm_time_2 = 0;
+ 294   3                      }
+ 295   2                      FreqSelect= Alarm2[Alarm2Select];
+ 296   2                      Alarm2Select++;
+ 297   2                      Delayxms(125*Alarm2[Alarm2Select]);
+ 298   2                      alarm_time_0 += 125*Alarm2[Alarm2Select] ;
+ 299   2                      alarm_time_2 = alarm_time_0 / 1000 ;
+ 300   2                      Alarm2Select++;
+ 301   2                      if(Alarm2Select >= sizeof(Alarm2))
+ 302   2                      {
+C51 COMPILER V9.60.7.0   ALARM                                                             05/10/2024 23:08:10 PAGE 6   
+
+ 303   3                              Alarm2Select  = 0;
+ 304   3                      }
+ 305   2                      TR0 = 0;
+ 306   2                      Delayxms(5);
+ 307   2                      TR0 = 1;
+ 308   2                      Alarm_on = 1;
+ 309   2              }
+ 310   1              else if (s2 >= 40 && s2 < 60  )
+ 311   1              {
+ 312   2                      if(times != 0 || Alarm_on != 2)
+ 313   2                      {
+ 314   3                              Alarm3Select = 0;
+ 315   3                              alarm_time_0 = 0;
+ 316   3                              alarm_time_2 = 0;
+ 317   3                      }
+ 318   2                      FreqSelect= Alarm3[Alarm3Select];
+ 319   2                      Alarm3Select++;
+ 320   2                      Delayxms(125*Alarm3[Alarm3Select]);
+ 321   2                      alarm_time_0 += 125*Alarm3[Alarm3Select] ;
+ 322   2                      alarm_time_2 = alarm_time_0 / 1000 ;
+ 323   2                      Alarm3Select++;
+ 324   2                      if(Alarm3Select >= sizeof(Alarm3))
+ 325   2                      {
+ 326   3                              Alarm3Select  = 0;
+ 327   3                      }
+ 328   2                      TR0 = 0;
+ 329   2                      Delayxms(5);
+ 330   2                      
+ 331   2                      TR0 = 1;
+ 332   2                      Alarm_on = 2;
+ 333   2              }
+ 334   1              else
+ 335   1              {
+ 336   2                      Alarm1Select = 0;
+ 337   2                      Alarm2Select = 0;
+ 338   2                      Alarm3Select = 0;
+ 339   2                      TR0 = 0;
+ 340   2                      Buzzer = 1;
+ 341   2                      Alarm_on = 3;
+ 342   2              }
+ 343   1              return alarm_time_2;
+ 344   1      }
+ 345          
+ 346          void MusicPlayer_TimerRoutine(void) interrupt 1
+ 347          {
+ 348   1              /*
+ 349   1              这里是通过频率转换实现音调的转换，在Alarm1_Play主函数中音乐数组的索引不断增加，奇索引是音调，偶索引是音调
+             -持续的时间。
+ 350   1              */
+ 351   1          if(TR0)
+ 352   1              {
+ 353   2                      if(FreqTable[FreqSelect]) {
+ 354   3                              TL0 = FreqTable[FreqSelect] % 256;        
+ 355   3                              TH0 = FreqTable[FreqSelect] / 256;        
+ 356   3                              Buzzer = !Buzzer;
+ 357   3                      }
+ 358   2              }
+ 359   1              else
+ 360   1              {
+ 361   2                      Buzzer = 1;
+ 362   2              }
+ 363   1              
+C51 COMPILER V9.60.7.0   ALARM                                                             05/10/2024 23:08:10 PAGE 7   
+
+ 364   1      }
+ 365          
+ 366          
+ 367          
+ 368          int Alarm_Close()
+ 369          {
+ 370   1              TR0 = 0;
+ 371   1              Buzzer = 1;
+ 372   1              alarm_time_0 = 0;
+ 373   1              alarm_time_2 = 0;
+ 374   1              return alarm_time_2;
+ 375   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    692    ----
+   CONSTANT SIZE    =    304    ----
+   XDATA SIZE       =     14    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     74       4
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
